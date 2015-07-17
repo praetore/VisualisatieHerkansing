@@ -18,6 +18,8 @@ public class HerkansingOpdracht2 extends PApplet {
     private PFont font;
     private Map<Integer, Weerstation> weerstationMap;
 
+    private Weerstation selected;
+
     @Override
     public void setup() {
         size(800, 800);
@@ -34,6 +36,7 @@ public class HerkansingOpdracht2 extends PApplet {
         geoMap.draw();
         drawStations();
         checkCollision();
+        displayData();
     }
 
     public void loadData() {
@@ -80,8 +83,7 @@ public class HerkansingOpdracht2 extends PApplet {
     }
 
     private void drawStations() {
-        for (Map.Entry<Integer, Weerstation> entry : weerstationMap.entrySet()) {
-            Weerstation weerstation = entry.getValue();
+        for (Weerstation weerstation : weerstationMap.values()) {
             fill(color(201, 60, 60));
             PVector location = weerstation.getLocation();
             ellipse(location.x, location.y, POINTSIZE, POINTSIZE);
@@ -92,10 +94,11 @@ public class HerkansingOpdracht2 extends PApplet {
     }
 
     private void checkCollision() {
+        selected = null;
         for (Weerstation weerstation : weerstationMap.values()) {
             PVector location = weerstation.getLocation();
             if (collide(location.x, location.y, POINTSIZE)) {
-                System.out.println(weerstation);
+                selected = weerstation;
                 break;
             }
         }
@@ -105,6 +108,30 @@ public class HerkansingOpdracht2 extends PApplet {
         float disX = x - mouseX;
         float disY = y - mouseY;
         return sqrt(sq(disX) + sq(disY)) < diameter / 2;
+    }
+
+    private void displayData() {
+        fill(255);
+        stroke(0);
+        rect(30, 30, 200, 250);
+        if (selected != null) {
+            textFont(font, 21);
+            fill(0);
+            text(selected.getName(), 45, 60);
+            textFont(font, 13);
+            fill(color(10, 25, 143));
+            text("Minimum temperatuur\n  " + round(selected.getMinTemp()) + " graden Celcius ", 50, 90);
+            fill(color(143, 10, 10));
+            text("Maximum temperatuur\n  " + round(selected.getMaxTemp()) + " graden Celcius ", 50, 140);
+            fill(color(77, 143, 10));
+            text("Gemiddelde temperatuur\n  " + round(selected.getAvgTemp()) + " graden Celcius ", 50, 190);
+            fill(0);
+            text("Neerslag\n  " + round(selected.getRainFall()) + " mm", 50, 240);
+        } else {
+            textFont(font, 11);
+            fill(0);
+            text("Hover over een \nweerstation met \nde muis!", 50, 220);
+        }
     }
 
     /**
@@ -170,30 +197,42 @@ public class HerkansingOpdracht2 extends PApplet {
         }
 
         public Float getMaxTemp() {
-            Collections.sort(max_temps);
-            Collections.reverse(max_temps);
-            return max_temps.get(0);
+            if (max_temps.size() > 0) {
+                Collections.sort(max_temps);
+                Collections.reverse(max_temps);
+                return max_temps.get(0);
+            }
+            return 0f;
         }
 
         public Float getMinTemp() {
-            Collections.sort(min_temps);
-            return min_temps.get(0);
+            if (min_temps.size() > 0) {
+                Collections.sort(min_temps);
+                return min_temps.get(0);
+            }
+            return 0f;
         }
 
         public Float getAvgTemp() {
             float sum = 0;
-            for (Float temp : avg_temps) {
-                sum += temp;
+            if (avg_temps.size() > 0) {
+                for (Float temp : avg_temps) {
+                    sum += temp;
+                }
+                return sum / avg_temps.size();
             }
-            return sum / avg_temps.size();
+            return sum;
         }
 
         public float getRainFall() {
             float sum = 0;
-            for (Float obs : rainfall) {
-                sum += obs;
+            if (rainfall.size() > 0) {
+                for (Float obs : rainfall) {
+                    sum += obs;
+                }
+                return sum / rainfall.size();
             }
-            return sum / rainfall.size();
+            return sum;
         }
 
         @Override
