@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Created by darryl on 16-7-15.
  */
-public class HerkansingsOpdracht1 extends PApplet implements Opdracht {
+public class HerkansingsOpdracht1 extends PApplet {
     private final String HUMIDITY = "Luchtvochtigheid";
     private final String TEMPERATURE = "Temperatuur";
     private final String SUNSHINE = "Zonneschijnduur";
     private final String AIRPRESSURE = "Luchtdruk";
     private final String WINDSPEED = "Windsnelheid";
     private final String[] CONSTANTS = {
-        HUMIDITY, TEMPERATURE, SUNSHINE, AIRPRESSURE, WINDSPEED
+            HUMIDITY, TEMPERATURE, SUNSHINE, AIRPRESSURE, WINDSPEED
     };
     private XYChart scatterplot;
     private Map<String, float[]> records;
@@ -37,6 +37,13 @@ public class HerkansingsOpdracht1 extends PApplet implements Opdracht {
         loadData();
         setupScatterPlot();
         setupDropdownLists();
+    }
+
+    // Draws the scatterplot.
+    @Override
+    public void draw() {
+        background(255);
+        scatterplot.draw(20, 20, width - 40, height - 40);
     }
 
     private void updateScatterPlot() {
@@ -104,7 +111,6 @@ public class HerkansingsOpdracht1 extends PApplet implements Opdracht {
                 .addItems(CONSTANTS);
     }
 
-    @Override
     public void controlEvent(ControlEvent event) {
         // DropdownList selects key to be loaded
         if (event.isController()) {
@@ -116,12 +122,5 @@ public class HerkansingsOpdracht1 extends PApplet implements Opdracht {
             }
             updateScatterPlot();
         }
-    }
-
-    // Draws the scatterplot.
-    @Override
-    public void draw() {
-        background(255);
-        scatterplot.draw(20, 20, width - 40, height - 40);
     }
 }
